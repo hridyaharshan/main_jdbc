@@ -4,6 +4,8 @@ package com.example.javaspringboot_assignment.Entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -11,17 +13,24 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ServiceProvider implements BaseUser {
+public class ServiceProvider {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private Long id;
 
-    @Column(unique = true)
     private String username;
-
     private String password;
+
+    private String category; // 🛠️ e.g., "plumbing", "electrician", etc.
+
+    @ElementCollection
+    private List<LocalDate> availableDates;
+
 
     @Enumerated(EnumType.STRING)
     private UserRole role;
+
 }
+
 

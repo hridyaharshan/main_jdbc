@@ -30,8 +30,11 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/customer/**").hasRole("CUSTOMER")
+                        .requestMatchers("/api/provider/**").hasRole("PROVIDER")
                         .anyRequest().authenticated()
                 )
+
                 .sessionManagement(sess -> sess
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )

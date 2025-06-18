@@ -15,39 +15,36 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class CustomerUserDetailsService implements UserDetailsService {
-
     private final CustomerRepository customerRepository;
     private final ServiceProviderRepository providerRepository;
-
-    public CustomerUserDetailsService(CustomerRepository customerRepository,
-                                      ServiceProviderRepository providerRepository) {
-        this.customerRepository = customerRepository;
-        this.providerRepository = providerRepository;
-    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<Customer> customer = customerRepository.findByUsername(username);
         if (customer.isPresent()) {
-            return new org.springframework.security.core.userdetails.User(
-                    customer.get().getUsername(),
-                    customer.get().getPassword(),
+            Customer c = customer.get();
+            return new User(
+                    c.getUsername(),
+                    c.getPassword(),
                     List.of(new SimpleGrantedAuthority("ROLE_CUSTOMER"))
             );
         }
 
         Optional<ServiceProvider> provider = providerRepository.findByUsername(username);
         if (provider.isPresent()) {
-            return new org.springframework.security.core.userdetails.User(
-                    provider.get().getUsername(),
-                    provider.get().getPassword(),
+            ServiceProvider p = provider.get();
+            return new User(
+                    p.getUsername(),
+                    p.getPassword(),
                     List.of(new SimpleGrantedAuthority("ROLE_PROVIDER"))
             );
         }
 
-        throw new UsernameNotFoundException("User not found: " + username);
+        throw new UsernameNotFoundException("User not found with username: " + username);
     }
 }
+
 
 

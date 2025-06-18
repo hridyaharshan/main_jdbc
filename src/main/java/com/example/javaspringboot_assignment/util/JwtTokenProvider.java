@@ -16,19 +16,27 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 
+//creating the token
+//reading the information
+//validating them
+
 
 @Component
 public class JwtTokenProvider {
 
+
+    //the secret key we fetched from application propperties
     @Value("${jwt.secret}")
     private String rawSecretKey;
 
+    //how long time the thing will run
     @Value("${jwt.expiration}")
     private long validityInMillis;
 
     private String secretKey;
 
 
+    //base64 it changed the token so better security is provided
     @PostConstruct
     protected void init() {
         this.secretKey = Base64.getEncoder().encodeToString(rawSecretKey.getBytes());

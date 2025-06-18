@@ -18,13 +18,22 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+
+
+/// CHECKS IF THE INCOMING HTTP REQUESTS ARE MADE BY AN AUTHENTICATED USER USING JWT TOKEN
+
 @Component
+
 @RequiredArgsConstructor
+//for the constructor that accepts final fields
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+//authenticationfilter-check if it contains a valid jwt json token
+    private final JwtTokenProvider jwtTokenProvider;//responsible for genearting,extracting and validating jwt
 
-    private final JwtTokenProvider jwtTokenProvider;
-    private final CustomerUserDetailsService userDetailsService;
+    private final CustomerUserDetailsService userDetailsService;//for loading the userdetails
 
+
+    //checking for valid token before passing on
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
@@ -32,16 +41,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
+        //basicaly used to authenticate without much complex name and password each
         String authHeader = request.getHeader("Authorization");
 
+
+        //null then skip jwt processing
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
+        //removing the bearer and getting only the token
         String token = authHeader.substring(7);
         String username = jwtTokenProvider.extractUsername(token);
 
+        //username is not null and nnot authenticated then proced further
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
@@ -55,6 +69,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         }
 
+        //passes the request to the next filter present
         filterChain.doFilter(request, response);
     }
 }
